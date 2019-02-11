@@ -5,16 +5,14 @@ const Client = require('../clients/model')
 exports.browsePolicesByClientName = async (req, res) => {
 	const { userName } = req.params;
 	const promises = [
-		Client.getByName(userName),
-		Policy.fetchAll()
+		Policy.fetchAll(),
+		Client.getByName(userName)
 	];
-	const data = await Promise.all(promises);
-	const clients = data[0];
-	const policies = data[1];
+	const [policies, clients] = await Promise.all(promises);
 
-	responseData = _.intersectionWith(policies, clients, (policy, client) => {
+	data = _.intersectionWith(policies, clients, (policy, client) => {
 		return policy.clientId === client.id;
 	});
 
-	res.send(responseData);
+	res.send(data);
 }
